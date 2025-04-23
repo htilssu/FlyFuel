@@ -1,0 +1,11 @@
+name: FlyFuel
+version: "1.0-SNAPSHOT"
+main: org.htilssu.flyFuel.FlyFuel
+api-version: "1.18"
+load: STARTUP
+authors: [htilssu]
+
+permissions:
+  flyfuel.use:
+    description: Allows the player to use the fly fuel feature
+    default: true
