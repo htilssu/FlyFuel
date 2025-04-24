@@ -1,12 +1,12 @@
 package org.htilssu.flyFuel.listeners
 
-import org.bukkit.ChatColor
-import org.bukkit.entity.Player
-import org.bukkit.event.EventHandler
-import org.bukkit.event.EventPriority
-import org.bukkit.event.Listener
-import org.htilssu.flyFuel.FuelManager
-import org.htilssu.flyFuel.events.CountdownEvent
+import net.kyori.adventure.audience.*
+import net.kyori.adventure.text.*
+import net.kyori.adventure.text.format.*
+import org.bukkit.entity.*
+import org.bukkit.event.*
+import org.htilssu.flyFuel.*
+import org.htilssu.flyFuel.events.*
 
 /**
  * Listener xử lý các sự kiện đếm ngược và tiêu hao nhiên liệu
@@ -18,9 +18,14 @@ class CountdownListener(
     private val fuelManager: FuelManager,
     
     /**
-     * Tốc độ tiêu hao nhiên liệu mỗi giây
+     * Tốc độ tiêu hao nhiên liệu khi đi bộ thường (đơn vị/giây)
      */
     private var consumptionRate: Double = 1.0,
+    
+    /**
+     * Tốc độ tiêu hao nhiên liệu khi chạy nước rút (đơn vị/giây)
+     */
+    private var sprintConsumptionRate: Double = 2.0,
     
     /**
      * Ngưỡng cảnh báo nhiên liệu thấp
@@ -44,14 +49,14 @@ class CountdownListener(
     @EventHandler(priority = EventPriority.NORMAL)
     fun onCountdown(event: CountdownEvent) {
         val player = event.player
-        
+
         // Kiểm tra xem người chơi có đang bay không
         if (event.isFlying) {
             // Kiểm tra quyền bỏ qua tiêu hao nhiên liệu
             if (player.hasPermission("flyfuel.bypass")) {
                 return
             }
-            
+
             // Tiêu hao nhiên liệu
             processPlayerFuel(player)
         }
@@ -63,14 +68,26 @@ class CountdownListener(
      * @param player Người chơi cần xử lý
      */
     private fun processPlayerFuel(player: Player) {
+        // Xác định tốc độ tiêu hao dựa vào trạng thái di chuyển của người chơi
+        val actualConsumptionRate = if (player.isSprinting) {
+            sprintConsumptionRate
+        } else {
+            consumptionRate
+        }
+        
         // Tiêu hao nhiên liệu dựa trên tốc độ tiêu hao
-        val remainingFuel = fuelManager.consumeFuel(player, consumptionRate)
+        val remainingFuel = fuelManager.consumeFuel(player, actualConsumptionRate)
         
         // Kiểm tra nhiên liệu còn lại
         if (remainingFuel <= 0) {
             // Hết nhiên liệu, dừng bay
             fuelManager.setFlying(player, false)
-            player.sendMessage("${ChatColor.RED}Bạn đã hết nhiên liệu! Không thể bay tiếp.")
+            
+            // Sử dụng Adventure API để gửi thông báo hết nhiên liệu
+            player.sendMessage(
+                Component.text("Bạn đã hết nhiên liệu! Không thể bay tiếp.")
+                    .color(NamedTextColor.RED)
+            )
         } else if (remainingFuel <= lowFuelThreshold) {
             // Kiểm tra thời gian để tránh spam cảnh báo
             val playerId = player.uniqueId.toString()
@@ -79,7 +96,11 @@ class CountdownListener(
             
             // Chỉ cảnh báo mỗi 5 giây
             if (currentTime - lastTime > 5000) {
-                player.sendMessage("${ChatColor.YELLOW}Cảnh báo: Nhiên liệu còn thấp (${String.format("%.1f", remainingFuel)})!")
+                // Sử dụng Adventure API để gửi cảnh báo nhiên liệu thấp
+                player.sendMessage(
+                    Component.text("Cảnh báo: Nhiên liệu còn thấp (${String.format("%.1f", remainingFuel)})!")
+                        .color(NamedTextColor.YELLOW)
+                )
                 lastWarningTime[playerId] = currentTime
             }
         }
@@ -91,7 +112,7 @@ class CountdownListener(
     }
     
     /**
-     * Cập nhật thanh hành động hiển thị nhiên liệu
+     * Cập nhật thanh hành động hiển thị nhiên liệu sử dụng Adventure API
      *
      * @param player Người chơi cần cập nhật
      * @param fuel Lượng nhiên liệu hiện tại
@@ -102,57 +123,58 @@ class CountdownListener(
         val barLength = 20
         val filledLength = (fuelRatio * barLength).toInt()
         
-        // Tạo thanh hiển thị
-        val bar = StringBuilder()
-        
         // Chọn màu dựa trên lượng nhiên liệu
         val barColor = when {
-            fuelRatio > 0.5 -> ChatColor.GREEN
-            fuelRatio > 0.25 -> ChatColor.YELLOW
-            else -> ChatColor.RED
+            fuelRatio > 0.5 -> NamedTextColor.GREEN
+            fuelRatio > 0.25 -> NamedTextColor.YELLOW
+            else -> NamedTextColor.RED
         }
         
-        // Tạo thanh nhiên liệu
-        bar.append(barColor)
-        repeat(filledLength) { bar.append("|") }
-        bar.append(ChatColor.GRAY)
-        repeat(barLength - filledLength) { bar.append("|") }
+        // Tạo thanh nhiên liệu với Adventure API
+        val filledBar = Component.text("|".repeat(filledLength)).color(barColor)
+        val emptyBar = Component.text("|".repeat(barLength - filledLength)).color(NamedTextColor.GRAY)
         
-        // Hiển thị thanh nhiên liệu và số nhiên liệu
-        val message = "${ChatColor.GOLD}Nhiên liệu: $bar ${ChatColor.WHITE}${String.format("%.1f", fuel)}/${fuelManager.maxFuel}"
-        
-        // Gửi thông báo đến thanh hành động của người chơi
-        try {
-            // Sử dụng reflection để tránh lỗi biên dịch trên các phiên bản khác nhau
-            val title = Class.forName("net.md_5.bungee.api.ChatMessageType").getField("ACTION_BAR").get(null)
-            val chatComponent = Class.forName("net.md_5.bungee.api.chat.TextComponent")
-                .getConstructor(String::class.java)
-                .newInstance(message)
+        // Tạo component đầy đủ với thông tin nhiên liệu
+        val fuelInfoText = Component.text("${String.format("%.1f", fuel)}/${fuelManager.maxFuel}")
+            .color(NamedTextColor.WHITE)
             
-            player.javaClass.getMethod(
-                "spigot"
-            ).invoke(player).javaClass.getMethod(
-                "sendMessage", 
-                Class.forName("net.md_5.bungee.api.ChatMessageType"),
-                Class.forName("net.md_5.bungee.api.chat.BaseComponent")
-            ).invoke(
-                player.javaClass.getMethod("spigot").invoke(player),
-                title,
-                chatComponent
-            )
+        val message = Component.text("Nhiên liệu: ")
+            .color(NamedTextColor.GOLD)
+            .append(filledBar)
+            .append(emptyBar)
+            .append(Component.space())
+            .append(fuelInfoText)
+        
+        // Sử dụng Adventure API để gửi action bar message
+        try {
+            // Cast Player sang Audience để sử dụng các tính năng của Adventure API
+            val audience = player as Audience
+            audience.sendActionBar(message)
         } catch (e: Exception) {
             // Fallback nếu không thể sử dụng action bar
-            player.sendMessage(message)
+            player.sendMessage(
+                Component.text("Nhiên liệu: ${String.format("%.1f", fuel)}/${fuelManager.maxFuel}")
+                    .color(NamedTextColor.GOLD)
+            )
         }
     }
     
     /**
-     * Cập nhật cấu hình tiêu hao nhiên liệu
+     * Cập nhật cấu hình tiêu hao nhiên liệu khi đi bộ
      * 
      * @param rate Tốc độ tiêu hao nhiên liệu mới
      */
     fun setConsumptionRate(rate: Double) {
         this.consumptionRate = rate
+    }
+    
+    /**
+     * Cập nhật cấu hình tiêu hao nhiên liệu khi chạy nước rút
+     * 
+     * @param rate Tốc độ tiêu hao nhiên liệu khi chạy mới
+     */
+    fun setSprintConsumptionRate(rate: Double) {
+        this.sprintConsumptionRate = rate
     }
     
     /**

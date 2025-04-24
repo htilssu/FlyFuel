@@ -37,11 +37,6 @@ class FlyFuel : JavaPlugin() {
             // Khởi động bộ đếm ngược
             countdownTimer.start()
             
-            // Thêm tất cả người chơi đang online vào danh sách theo dõi
-            Bukkit.getOnlinePlayers().forEach { player ->
-                countdownTimer.trackPlayer(player)
-            }
-            
             logger.info("FlyFuel has been enabled successfully!")
             logger.info("Compatible with server version: ${versionAdapter.getVersion()}")
         } catch (e: Exception) {
@@ -88,6 +83,7 @@ class FlyFuel : JavaPlugin() {
         countdownListener = CountdownListener(
             fuelManager,
             fuelConfig.consumptionRate,
+            fuelConfig.sprintConsumptionRate,
             fuelConfig.lowFuelThreshold,
             fuelConfig.showActionBar
         )
@@ -162,6 +158,7 @@ class FlyFuel : JavaPlugin() {
         
         // Cập nhật cấu hình cho countdown listener
         countdownListener.setConsumptionRate(fuelConfig.consumptionRate)
+        countdownListener.setSprintConsumptionRate(fuelConfig.sprintConsumptionRate)
         countdownListener.setLowFuelThreshold(fuelConfig.lowFuelThreshold)
         countdownListener.setShowActionBar(fuelConfig.showActionBar)
     }

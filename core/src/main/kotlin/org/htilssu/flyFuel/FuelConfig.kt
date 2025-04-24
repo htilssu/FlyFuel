@@ -21,6 +21,12 @@ class FuelConfig(private val plugin: Plugin) {
         private set
     
     /**
+     * Tốc độ tiêu hao nhiên liệu khi chạy nước rút (đơn vị/giây)
+     */
+    var sprintConsumptionRate: Double = 2.0
+        private set
+    
+    /**
      * Ngưỡng cảnh báo khi nhiên liệu thấp
      */
     var lowFuelThreshold: Double = 10.0
@@ -72,6 +78,7 @@ class FuelConfig(private val plugin: Plugin) {
         
         maxFuel = config.getDouble("fuel.max", 100.0)
         consumptionRate = config.getDouble("fuel.consumption-rate", 1.0)
+        sprintConsumptionRate = config.getDouble("fuel.sprint-consumption-rate", 2.0)
         lowFuelThreshold = config.getDouble("fuel.low-threshold", 10.0)
         
         saveOnQuit = config.getBoolean("settings.save-on-quit", true)
@@ -91,6 +98,7 @@ class FuelConfig(private val plugin: Plugin) {
         
         config.set("fuel.max", maxFuel)
         config.set("fuel.consumption-rate", consumptionRate)
+        config.set("fuel.sprint-consumption-rate", sprintConsumptionRate)
         config.set("fuel.low-threshold", lowFuelThreshold)
         
         config.set("settings.save-on-quit", saveOnQuit)
@@ -119,7 +127,8 @@ class FuelConfig(private val plugin: Plugin) {
                 Cấu hình plugin FlyFuel
                 
                 fuel.max: Lượng nhiên liệu tối đa cho mỗi người chơi
-                fuel.consumption-rate: Tốc độ tiêu hao nhiên liệu (đơn vị/giây)
+                fuel.consumption-rate: Tốc độ tiêu hao nhiên liệu khi đi bộ (đơn vị/giây)
+                fuel.sprint-consumption-rate: Tốc độ tiêu hao nhiên liệu khi chạy nước rút (đơn vị/giây)
                 fuel.low-threshold: Ngưỡng cảnh báo khi nhiên liệu thấp
                 
                 settings.save-on-quit: Lưu dữ liệu khi người chơi thoát

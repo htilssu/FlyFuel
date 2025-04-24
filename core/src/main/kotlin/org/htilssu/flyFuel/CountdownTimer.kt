@@ -17,7 +17,7 @@ class CountdownTimer(private val plugin: Plugin) {
      * Task chính của timer
      */
     private var mainTask: BukkitTask? = null
-    
+
     /**
      * Danh sách người chơi đang được theo dõi
      */

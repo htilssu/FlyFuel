@@ -84,7 +84,7 @@ class PlayerListener(
         val isFlying = event.isFlying
         
         // Nếu người chơi đang cố gắng bay
-        if (isFlying) {
+        if (isFlying && !player.isOp) {
             // Kiểm tra xem người chơi có đủ nhiên liệu không
             if (!player.hasPermission("flyfuel.bypass") && !fuelManager.hasFuel(player, 0.0)) {
                 // Nếu không đủ nhiên liệu, hủy sự kiện
