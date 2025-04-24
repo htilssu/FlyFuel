@@ -1,11 +1,8 @@
 package org.htilssu.flyFuel
 
-import org.bukkit.Bukkit
-import org.htilssu.flyFuel.v1_18.VersionAdapter_1_18
-import org.htilssu.flyFuel.v1_19.VersionAdapter_1_19
-import org.htilssu.flyFuel.v1_20.VersionAdapter_1_20
-import java.util.logging.Logger
-import java.util.ServiceLoader
+import org.bukkit.*
+import java.util.*
+import java.util.logging.*
 
 /**
  * Factory class to create the appropriate VersionAdapter for the current server version
@@ -28,10 +25,8 @@ object VersionAdapterFactory {
         // Find a compatible adapter
         val adapter = adapters.find { it.isCompatible(version) }
         
-        return adapter ?: throw IllegalStateException(
-            "Unsupported server version: $version. " +
-            "This plugin supports versions: ${adapters.joinToString(", ") { it.getServerNMSVersion() }}"
-        )
+        return adapter
+            ?: throw IllegalStateException("No compatible version adapter found for version $version")
     }
     
     /**
