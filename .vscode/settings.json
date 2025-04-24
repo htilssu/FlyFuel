@@ -2,5 +2,6 @@
   "yaml.schemas": {
     "https://json.schemastore.org/bukkit-plugin.json": "file:///d%3A/FlyFuel/src/main/resources/plugin.yml"
   },
-  "java.configuration.updateBuildConfiguration": "disabled"
+  "java.configuration.updateBuildConfiguration": "disabled",
+  "java.compile.nullAnalysis.mode": "disabled"
 }

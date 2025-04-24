@@ -14,10 +14,6 @@ class CountdownEvent(
      */
     val player: Player,
 
-    /**
-     * Thời gian còn lại (tính bằng giây)
-     */
-    val remainingTime: Int,
 
     /**
      * Cho biết người chơi có đang bay hay không

@@ -1,13 +1,10 @@
 package org.htilssu.flyFuel
 
-import org.bukkit.Bukkit
-import org.bukkit.plugin.java.JavaPlugin
-import org.htilssu.flyFuel.command.FlyFuelCommand
-import org.htilssu.flyFuel.listeners.CountdownListener
-import org.htilssu.flyFuel.listeners.PlayerListener
+import org.bukkit.plugin.java.*
+import org.htilssu.flyFuel.command.*
+import org.htilssu.flyFuel.listeners.*
 
 class FlyFuel : JavaPlugin() {
-    private lateinit var versionAdapter: VersionAdapter
     private lateinit var fuelManager: FuelManager
     private lateinit var fuelStorage: FuelStorage
     private lateinit var fuelConfig: FuelConfig
@@ -21,10 +18,7 @@ class FlyFuel : JavaPlugin() {
         
         // Initialize version adapter
         try {
-            // Khởi tạo version adapter
-            versionAdapter = VersionAdapterFactory.getAdapter(logger)
-            logger.info("Using version adapter: ${versionAdapter.javaClass.simpleName}")
-            
+
             // Khởi tạo các thành phần
             initializeComponents()
             
@@ -38,7 +32,6 @@ class FlyFuel : JavaPlugin() {
             countdownTimer.start()
             
             logger.info("FlyFuel has been enabled successfully!")
-            logger.info("Compatible with server version: ${versionAdapter.getVersion()}")
         } catch (e: Exception) {
             logger.severe("Failed to enable FlyFuel: ${e.message}")
             e.printStackTrace()
@@ -105,17 +98,8 @@ class FlyFuel : JavaPlugin() {
         pluginManager.registerEvents(countdownListener, this)
         pluginManager.registerEvents(playerListener, this)
         
-        // Đăng ký version-specific events
-        versionAdapter.registerEvents(this)
     }
-    
-    /**
-     * Get the version adapter being used by the plugin
-     * @return the version adapter instance
-     */
-    fun getVersionAdapter(): VersionAdapter {
-        return versionAdapter
-    }
+
     
     /**
      * Lấy FuelManager đang được sử dụng

@@ -78,7 +78,7 @@ class PlayerListener(
     /**
      * Xử lý khi người chơi bật/tắt chế độ bay
      */
-    @EventHandler(priority = EventPriority.NORMAL)
+    @EventHandler(priority = EventPriority.LOWEST)
     fun onPlayerToggleFlight(event: PlayerToggleFlightEvent) {
         val player = event.player
         val isFlying = event.isFlying

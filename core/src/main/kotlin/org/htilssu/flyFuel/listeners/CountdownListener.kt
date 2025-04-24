@@ -30,7 +30,7 @@ class CountdownListener(
     /**
      * Ngưỡng cảnh báo nhiên liệu thấp
      */
-    private var lowFuelThreshold: Double = 10.0,
+    private var lowFuelThreshold: Double = 20.0,
     
     /**
      * Có hiển thị thanh action bar không

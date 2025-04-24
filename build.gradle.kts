@@ -1,6 +1,6 @@
 plugins {
-    kotlin("jvm") version "2.1.20"
-    id("com.gradleup.shadow") version "8.3.0"
+    kotlin("jvm") version "1.9.20"
+    id("com.github.johnrengelman.shadow") version "7.1.2"
     id("xyz.jpenilla.run-paper") version "2.3.1"
 }
 
@@ -39,25 +39,64 @@ dependencies { // Kotlin standard library
     implementation(project(":v1_20"))
 }
 
+// Đường dẫn tới thư mục plugins của Minecraft server
+// Hãy thay đổi đường dẫn này tới thư mục plugins của server của bạn
+val serverPluginsDir = "C:/Users/tolas/Downloads/server/plugins"
+
 tasks {
     shadowJar {
         archiveBaseName.set("FlyFuel")
 
-        // Include all submodules in the shadow jar
         dependencies {
             include(dependency("org.htilssu:core"))
             include(dependency("org.htilssu:v1_18"))
             include(dependency("org.htilssu:v1_19"))
             include(dependency("org.htilssu:v1_20"))
+            // Include Kotlin runtime
+            include(dependency("org.jetbrains.kotlin:kotlin-stdlib"))
+            include(dependency("org.jetbrains.kotlin:kotlin-stdlib-jdk8"))
+            include(dependency("org.jetbrains.kotlin:kotlin-stdlib-jdk7"))
+            include(dependency("org.jetbrains.kotlin:kotlin-reflect"))
         }
-    }
-
-    runServer {
-        minecraftVersion("1.18")
+        
+        // Relocate Kotlin packages để tránh xung đột
+        relocate("kotlin", "org.htilssu.flyFuel.kotlin")
     }
 
     build {
         dependsOn(shadowJar)
+    }
+    
+    // Task mới để copy file JAR vào thư mục plugins của server
+    register<Copy>("deployToServer") {
+        dependsOn(build)
+        
+        // Kiểm tra và tạo thư mục đích nếu nó không tồn tại
+        doFirst {
+            val directory = file(serverPluginsDir)
+            if (!directory.exists()) {
+                directory.mkdirs()
+                println("Created plugins directory: $serverPluginsDir")
+            }
+            
+            // Kiểm tra xem file JAR nguồn có tồn tại không
+            val jarFile = shadowJar.get().archiveFile.get().asFile
+            if (!jarFile.exists()) {
+                throw GradleException("Source JAR file does not exist: ${jarFile.absolutePath}")
+            }
+            println("Source JAR file exists: ${jarFile.absolutePath}")
+        }
+        
+        from(shadowJar)
+        into(serverPluginsDir)
+        doLast {
+            println("Plugin JAR has been copied to server plugins directory: $serverPluginsDir")
+        }
+    }
+
+    // Ghi đè task shadowJar để nó tự động chạy deployToServer
+    named("shadowJar") {
+        finalizedBy("deployToServer")
     }
 }
 

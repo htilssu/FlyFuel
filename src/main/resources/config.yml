@@ -1,0 +1,117 @@
+## FlyFuel Configuration
+## Cấu hình FlyFuel
+## Created by htilssu
+## Được tạo bởi htilssu
+
+# Basic settings
+# Cấu hình cơ bản
+settings:
+  # Time interval (in seconds) between fuel consumption
+  # Thời gian (tính bằng giây) giữa các lần giảm nhiên liệu
+  countdown-interval: 1
+  # Rate of fuel consumption when flying (units: fuel/second)
+  # Tốc độ tiêu thụ nhiên liệu khi bay (đơn vị: nhiên liệu/giây)
+  consumption-rate: 1.0
+  # Rate of fuel consumption when flying and sprinting (units: fuel/second)
+  # Tốc độ tiêu thụ nhiên liệu khi bay và chạy (đơn vị: nhiên liệu/giây)
+  sprint-consumption-rate: 2.0
+  # Maximum amount of fuel a player can have
+  # Lượng nhiên liệu tối đa mà một người chơi có thể có
+  max-fuel: 100.0
+  # Default fuel amount when a player joins for the first time
+  # Lượng nhiên liệu mặc định khi người chơi tham gia lần đầu
+  default-fuel: 50.0
+  # Low fuel threshold, when reached, player will receive a warning
+  # Ngưỡng nhiên liệu thấp, khi đạt đến mức này, người chơi sẽ nhận được cảnh báo
+  low-fuel-threshold: 20.0
+  # Automatically disable flight when out of fuel
+  # Tự động tắt bay khi hết nhiên liệu
+  auto-disable-flight: true
+  # Automatically enable flight when refueling (if permission allows)
+  # Tự động kích hoạt bay khi nạp nhiên liệu (nếu đủ quyền)
+  auto-enable-flight: true
+  # Save player fuel data when they quit the server
+  # Lưu dữ liệu nhiên liệu của người chơi khi họ thoát khỏi máy chủ
+  save-on-quit: true
+  # Refill player fuel when they rejoin the server
+  # Nạp lại nhiên liệu cho người chơi khi họ tham gia lại máy chủ
+  refill-on-join: false
+
+# Messages
+# Thông báo
+messages:
+  # Show action bar or not
+  # Có hiển thị thanh action bar không
+  show-action-bar: true
+  # Message when player starts flying
+  # Thông báo khi người chơi bắt đầu bay
+  flight-enabled: "&aFlight mode activated! Fuel: &f%fuel% "
+  # Message when player stops flying
+  # Thông báo khi người chơi dừng bay
+  flight-disabled: "&cFlight mode deactivated! Remaining fuel: &f%fuel%"
+  # Message when player is out of fuel
+  # Thông báo khi người chơi hết nhiên liệu
+  out-of-fuel: "&cYou are out of flight fuel!"
+  # Message when fuel is low
+  # Thông báo khi nhiên liệu thấp
+  low-fuel: "&eFlight fuel is running low! Remaining: &f%fuel%"
+  # Format for fuel display on action bar
+  # Định dạng hiển thị nhiên liệu trên thanh action bar
+  fuel-display: "&6Flight fuel: &f%fuel%/%max%"
+  # Message when successfully refueled
+  # Thông báo khi nạp nhiên liệu thành công
+  refuel-success: "&aRefueled successfully! Current fuel: &f%fuel%/%max%"
+  # Format for fuel bar display
+  # Định dạng hiển thị thanh nhiên liệu
+  fuel-bar-format: "&6Fuel: {bar} &f{fuel}/{maxFuel}"
+
+# Refuel configuration
+# Cấu hình nạp nhiên liệu
+refuel:
+  # Items that can be used to refuel
+  # Các vật phẩm có thể dùng để nạp nhiên liệu
+  items:
+    BLAZE_POWDER:
+      amount: 10.0
+      permission: "flyfuel.refuel.blazepowder"
+    GLOWSTONE_DUST:
+      amount: 5.0
+      permission: "flyfuel.refuel.glowstonedust"
+    GHAST_TEAR:
+      amount: 20.0
+      permission: "flyfuel.refuel.ghasttear"
+    NETHER_STAR:
+      amount: 100.0
+      permission: "flyfuel.refuel.netherstar"
+
+# Data storage configuration
+# Cấu hình lưu trữ dữ liệu
+storage:
+  # Storage method: file or mysql
+  # Phương thức lưu trữ: file hoặc mysql
+  method: "file"
+  # MySQL configuration (only when method is mysql)
+  # Cấu hình MySQL (chỉ khi method là mysql)
+  mysql:
+    host: "localhost"
+    port: 3306
+    database: "minecraft"
+    username: "root"
+    password: "password"
+    table-prefix: "flyfuel_"
+
+# Other settings
+# Cài đặt khác
+misc:
+  # Worlds where flying is allowed
+  # Các thế giới cho phép bay
+  allowed-worlds:
+    - "world"
+    - "world_nether"
+    - "world_the_end"
+  # Whether to consume fuel in creative mode
+  # Có cho phép tiêu thụ nhiên liệu trong chế độ sáng tạo
+  consume-in-creative: false
+  # Particle effects when flying
+  # Hiệu ứng hạt khi bay
+  particle-effects: true

@@ -25,9 +25,29 @@ class FuelManager {
     var defaultConsumptionRate: Double = 1.0
     
     /**
+     * Tốc độ tiêu hao nhiên liệu khi chạy nước rút (đơn vị/giây)
+     */
+    var sprintConsumptionRate: Double = 2.0
+    
+    /**
+     * Mức nhiên liệu mặc định khi người chơi tham gia lần đầu
+     */
+    var defaultFuel: Double = 50.0
+    
+    /**
      * Mức nhiên liệu tối đa cho mỗi người chơi
      */
     var maxFuel: Double = 100.0
+    
+    /**
+     * Tự động tắt bay khi hết nhiên liệu
+     */
+    var autoDisableFlight: Boolean = true
+    
+    /**
+     * Tự động kích hoạt bay khi nạp nhiên liệu (nếu đủ quyền)
+     */
+    var autoEnableFlight: Boolean = true
     
     /**
      * Kiểm tra xem người chơi có đủ nhiên liệu không
@@ -47,7 +67,7 @@ class FuelManager {
      * @return Lượng nhiên liệu hiện tại
      */
     fun getFuel(player: Player): Double {
-        return playerFuel.getOrDefault(player.uniqueId, maxFuel)
+        return playerFuel.getOrDefault(player.uniqueId, defaultFuel)
     }
     
     /**
@@ -59,6 +79,16 @@ class FuelManager {
     fun setFuel(player: Player, amount: Double) {
         val cappedAmount = amount.coerceIn(0.0, maxFuel)
         playerFuel[player.uniqueId] = cappedAmount
+        
+        // Nếu hết nhiên liệu và autoDisableFlight được bật, tắt chế độ bay
+        if (cappedAmount <= 0 && autoDisableFlight && isFlying(player)) {
+            setFlying(player, false)
+        }
+        
+        // Nếu đang có nhiên liệu và autoEnableFlight được bật, bật chế độ bay
+        if (cappedAmount > 0 && autoEnableFlight && player.allowFlight && !isFlying(player)) {
+            setFlying(player, true)
+        }
     }
     
     /**
@@ -127,5 +157,16 @@ class FuelManager {
     fun removePlayer(player: Player) {
         playerFuel.remove(player.uniqueId)
         playerFlying.remove(player.uniqueId)
+    }
+    
+    /**
+     * Khởi tạo người chơi mới với nhiên liệu mặc định
+     * 
+     * @param player Người chơi cần khởi tạo
+     */
+    fun initializePlayer(player: Player) {
+        if (!playerFuel.containsKey(player.uniqueId)) {
+            setFuel(player, defaultFuel)
+        }
     }
 } 

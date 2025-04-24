@@ -39,14 +39,12 @@ class CountdownTimer(private val plugin: Plugin) {
                     // Kích hoạt CountdownEvent để listener có thể xử lý
                     if (isTracking(player)) {
                         val isFlying = player.isFlying
-                        val countdownEvent = CountdownEvent(player, 0, isFlying)
+                        val countdownEvent = CountdownEvent(player, isFlying)
                         Bukkit.getPluginManager().callEvent(countdownEvent)
                     }
                 }
             }
         }.runTaskTimer(plugin, 0L, 20L) // 20 ticks = 1 giây
-        
-        plugin.logger.info("CountdownTimer đã khởi động cho toàn server")
     }
     
     /**
