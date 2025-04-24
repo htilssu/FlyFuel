@@ -1,9 +1,8 @@
 package org.htilssu.flyFuel
 
-import org.bukkit.Bukkit
-import org.bukkit.scheduler.BukkitRunnable
-import org.bukkit.scheduler.BukkitTask
-import org.htilssu.flyFuel.events.CountdownEvent
+import org.bukkit.*
+import org.bukkit.scheduler.*
+import org.htilssu.flyFuel.events.*
 
 /**
  * Timer đếm ngược và kích hoạt CountdownEvent theo thời gian
@@ -16,29 +15,25 @@ class CountdownTimer(private val plugin: FlyFuel) {
      */
     private var mainTask: BukkitTask? = null
 
-    /**
-     * Danh sách người chơi đang được theo dõi
-     */
-    private val activePlayers: MutableSet<String> = mutableSetOf()
 
     /**
      * Khởi động bộ đếm thời gian chung cho cả server
      * Chỉ nên gọi một lần khi server khởi động
      */
-    fun start() {
-        // Hủy task cũ nếu còn đang chạy
+    fun start() { // Hủy task cũ nếu còn đang chạy
         stop()
 
         // Tạo task mới để chạy mỗi giây (20 ticks)
         mainTask = object : BukkitRunnable() {
-            override fun run() {
-                // Xử lý tất cả người chơi đang online
-                plugin.fuelManager.flyingPlayers.forEach { playerUUID -> {
-                    val player = plugin.server.getPlayer(playerUUID)
-                    if (player != null) {
-                        Bukkit.getPluginManager().callEvent(CountdownEvent(player))
+            override fun run() { // Xử lý tất cả người chơi đang online
+                for (uuid in plugin.fuelManager.flyingPlayers) {
+                     val player  = Bukkit.getPlayer(uuid)
+                    if (player == null || !player.isOnline) {
+                        continue
                     }
-                } }
+
+                    Bukkit.getPluginManager().callEvent(CountdownEvent(player))
+                }
             }
         }.runTaskTimer(plugin, 0L, 20L) // 20 ticks = 1 giây
     }
@@ -50,6 +45,5 @@ class CountdownTimer(private val plugin: FlyFuel) {
     fun stop() {
         mainTask?.cancel()
         mainTask = null
-        activePlayers.clear()
     }
 }

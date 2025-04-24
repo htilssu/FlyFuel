@@ -135,7 +135,6 @@ class FuelManager {
         } else {
             playerFlying.remove(player.uniqueId)
         }
-        player.isFlying = flying
         player.allowFlight = flying
     }
 
@@ -177,5 +176,9 @@ class FuelManager {
         if (!playerFuel.containsKey(player.uniqueId)) {
             setFuel(player, defaultFuel)
         }
+    }
+
+    fun removeFlyingPlayer(player: Player) {
+        playerFlying.remove(player.uniqueId)
     }
 } 

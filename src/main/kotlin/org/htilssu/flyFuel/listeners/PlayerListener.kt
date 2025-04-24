@@ -64,7 +64,7 @@ class PlayerListener(
         if (fuelConfig.saveOnQuit) {
             fuelStorage.savePlayerData(player)
         }
-        fuelManager.
+
         // Xóa dữ liệu tạm thời
         fuelManager.removePlayer(player)
     }
@@ -78,17 +78,18 @@ class PlayerListener(
         val isFlying = event.isFlying
         
         // Nếu người chơi đang cố gắng bay
-        if (isFlying && !player.isOp) {
+        if (isFlying && !player.isOp && !player.hasPermission("flyfuel.bypass") && ) {
             // Kiểm tra xem người chơi có đủ nhiên liệu không
-            if (!player.hasPermission("flyfuel.bypass") && !fuelManager.hasFuel(player, 0.0)) {
+            if (!fuelManager.hasFuel(player, 0.0)) {
                 // Nếu không đủ nhiên liệu, hủy sự kiện
                 event.isCancelled = true
                 player.sendMessage("§cBạn không có đủ nhiên liệu để bay!")
                 return
             }
+
+
         }
         
-        // Cập nhật trạng thái bay trong FuelManager
-        fuelManager.setFlying(player, isFlying)
+        player.isFlying = isFlying
     }
 } 

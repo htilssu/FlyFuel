@@ -76,10 +76,10 @@ class FlyFuelCommand(private val plugin: FlyFuel) : CommandExecutor, TabComplete
             return false
         }
         
-        val fuelManager = plugin.getFuelManager()
+        val fuelManager = plugin.fuelManager
 
         // Check if player has fuel to fly
-        if (!sender.isFlying && !sender.hasPermission("flyfuel.bypass") && !fuelManager.hasFuel(sender, 0.0)) {
+        if (!sender.allowFlight && !sender.hasPermission("flyfuel.bypass") && !fuelManager.hasFuel(sender, 0.0)) {
             sender.sendMessage("${ChatColor.RED}You don't have enough fuel to fly!")
             return false
         }
@@ -88,14 +88,8 @@ class FlyFuelCommand(private val plugin: FlyFuel) : CommandExecutor, TabComplete
 
         // Toggle flying state
         if (!isPlayerCanFly) {
-            sender.allowFlight = true
-            sender.isFlying = true
-            plugin.getCountdownTimer().trackPlayer(sender)
             fuelManager.setFlying(sender, true)
         } else {
-            sender.isFlying = false
-            sender.allowFlight = false
-            plugin.getCountdownTimer().untrackPlayer(sender)
             fuelManager.setFlying(sender, false)
         }
 
@@ -113,8 +107,8 @@ class FlyFuelCommand(private val plugin: FlyFuel) : CommandExecutor, TabComplete
             return false
         }
         
-        val fuelManager = plugin.getFuelManager()
-        val fuelConfig = plugin.getFuelConfig()
+        val fuelManager = plugin.fuelManager
+        val fuelConfig = plugin.fuelConfig
         
         val isFlying = sender.isFlying
         val currentFuel = fuelManager.getFuel(sender)
@@ -140,7 +134,7 @@ class FlyFuelCommand(private val plugin: FlyFuel) : CommandExecutor, TabComplete
             return false
         }
         
-        val fuelManager = plugin.getFuelManager()
+        val fuelManager = plugin.fuelManager
         
         // If player is specified
         if (args.size > 1) {
@@ -206,7 +200,7 @@ class FlyFuelCommand(private val plugin: FlyFuel) : CommandExecutor, TabComplete
             return false
         }
         
-        val fuelManager = plugin.getFuelManager()
+        val fuelManager = plugin.fuelManager
         val newFuel = fuelManager.addFuel(targetPlayer, amount)
         
         sender.sendMessage("${ChatColor.GREEN}Added $amount fuel to ${targetPlayer.name}. New total: $newFuel")
@@ -241,7 +235,7 @@ class FlyFuelCommand(private val plugin: FlyFuel) : CommandExecutor, TabComplete
             return false
         }
         
-        val fuelManager = plugin.getFuelManager()
+        val fuelManager = plugin.fuelManager
         fuelManager.setFuel(targetPlayer, amount)
         
         sender.sendMessage("${ChatColor.GREEN}Set ${targetPlayer.name}'s fuel to $amount")
