@@ -77,27 +77,30 @@ class FlyFuelCommand(private val plugin: FlyFuel) : CommandExecutor, TabComplete
         }
         
         val fuelManager = plugin.getFuelManager()
-        
+
         // Check if player has fuel to fly
         if (!sender.isFlying && !sender.hasPermission("flyfuel.bypass") && !fuelManager.hasFuel(sender, 0.0)) {
             sender.sendMessage("${ChatColor.RED}You don't have enough fuel to fly!")
             return false
         }
 
-        val isPlayerCurrentlyFlying = sender.isFlying
+        val isPlayerCanFly = sender.allowFlight
 
         // Toggle flying state
-        if (!isPlayerCurrentlyFlying) {
+        if (!isPlayerCanFly) {
             sender.allowFlight = true
             sender.isFlying = true
+            plugin.getCountdownTimer().trackPlayer(sender)
             fuelManager.setFlying(sender, true)
         } else {
             sender.isFlying = false
+            sender.allowFlight = false
+            plugin.getCountdownTimer().untrackPlayer(sender)
             fuelManager.setFlying(sender, false)
         }
 
         sender.sendMessage(
-            if (!isPlayerCurrentlyFlying) "${ChatColor.GREEN}Flight mode enabled! Fuel: ${String.format("%.1f", fuelManager.getFuel(sender))}"
+            if (!isPlayerCanFly) "${ChatColor.GREEN}Flight mode enabled! Fuel: ${String.format("%.1f", fuelManager.getFuel(sender))}"
             else "${ChatColor.YELLOW}Flight mode disabled."
         )
         

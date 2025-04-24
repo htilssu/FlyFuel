@@ -5,12 +5,12 @@ import org.htilssu.flyFuel.command.*
 import org.htilssu.flyFuel.listeners.*
 
 class FlyFuel : JavaPlugin() {
-    private lateinit var fuelManager: FuelManager
-    private lateinit var fuelStorage: FuelStorage
-    private lateinit var fuelConfig: FuelConfig
-    private lateinit var countdownTimer: CountdownTimer
-    private lateinit var countdownListener: CountdownListener
-    private lateinit var playerListener: PlayerListener
+    public lateinit var fuelManager: FuelManager
+    public lateinit var fuelStorage: FuelStorage
+    public lateinit var fuelConfig: FuelConfig
+    public lateinit var countdownTimer: CountdownTimer
+    public lateinit var countdownListener: CountdownListener
+    public lateinit var playerListener: PlayerListener
 
     override fun onEnable() {
         // Save default config
@@ -100,39 +100,6 @@ class FlyFuel : JavaPlugin() {
         
     }
 
-    
-    /**
-     * Lấy FuelManager đang được sử dụng
-     * @return FuelManager instance
-     */
-    fun getFuelManager(): FuelManager {
-        return fuelManager
-    }
-    
-    /**
-     * Lấy FuelStorage đang được sử dụng
-     * @return FuelStorage instance
-     */
-    fun getFuelStorage(): FuelStorage {
-        return fuelStorage
-    }
-    
-    /**
-     * Lấy FuelConfig đang được sử dụng
-     * @return FuelConfig instance
-     */
-    fun getFuelConfig(): FuelConfig {
-        return fuelConfig
-    }
-    
-    /**
-     * Lấy CountdownTimer đang được sử dụng
-     * @return CountdownTimer instance
-     */
-    fun getCountdownTimer(): CountdownTimer {
-        return countdownTimer
-    }
-    
     /**
      * Nạp lại cấu hình plugin
      */

@@ -51,9 +51,6 @@ class PlayerListener(
             // Nếu không, tải dữ liệu đã lưu
             fuelStorage.loadPlayerData(player)
         }
-        
-        // Thêm người chơi vào danh sách theo dõi của CountdownTimer
-        countdownTimer.trackPlayer(player)
     }
     
     /**
@@ -67,10 +64,7 @@ class PlayerListener(
         if (fuelConfig.saveOnQuit) {
             fuelStorage.savePlayerData(player)
         }
-        
-        // Xóa người chơi khỏi danh sách theo dõi của CountdownTimer
-        countdownTimer.untrackPlayer(player)
-        
+        fuelManager.
         // Xóa dữ liệu tạm thời
         fuelManager.removePlayer(player)
     }
