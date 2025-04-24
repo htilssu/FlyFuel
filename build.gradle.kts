@@ -4,46 +4,77 @@ plugins {
     id("xyz.jpenilla.run-paper") version "2.3.1"
 }
 
-group = "org.htilssu"
-version = "1.0-SNAPSHOT"
+allprojects {
+    group = "org.htilssu"
+    version = "1.0-SNAPSHOT"
 
-repositories {
-    mavenCentral()
-    maven("https://repo.papermc.io/repository/maven-public/") {
-        name = "papermc-repo"
+    repositories {
+        mavenCentral()
+        maven("https://repo.papermc.io/repository/maven-public/") {
+            name = "papermc-repo"
+        }
+        maven("https://oss.sonatype.org/content/groups/public/") {
+            name = "sonatype"
+        }
     }
-    maven("https://oss.sonatype.org/content/groups/public/") {
-        name = "sonatype"
+
+    // Cấu hình Java toolchain đơn giản hơn cho tất cả các dự án
+    plugins.withType<JavaPlugin> {
+        java {
+            toolchain {
+                languageVersion.set(JavaLanguageVersion.of(17)) // Sử dụng Java 17 thay vì 21
+            }
+        }
     }
 }
 
-dependencies {
-    compileOnly("io.papermc.paper:paper-api:1.18.2-R0.1-SNAPSHOT")
+dependencies { // Kotlin standard library
     implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8")
+    implementation("io.papermc.paper:paper-api:1.18.2-R0.1-SNAPSHOT")
+
+    // Include all submodules
+    implementation(project(":core"))
+    implementation(project(":v1_18"))
+    implementation(project(":v1_19"))
+    implementation(project(":v1_20"))
 }
 
 tasks {
-    runServer { // Configure the Minecraft version for our task.
-        // This is the only required configuration besides applying the plugin.
-        // Your plugin's jar (or shadowJar if present) will be used automatically.
+    shadowJar {
+        archiveBaseName.set("FlyFuel")
+
+        // Include all submodules in the shadow jar
+        dependencies {
+            include(dependency("org.htilssu:core"))
+            include(dependency("org.htilssu:v1_18"))
+            include(dependency("org.htilssu:v1_19"))
+            include(dependency("org.htilssu:v1_20"))
+        }
+    }
+
+    runServer {
         minecraftVersion("1.18")
+    }
+
+    build {
+        dependsOn(shadowJar)
     }
 }
 
+// Sử dụng Java 17 thay vì 21
 val targetJavaVersion = 17
 kotlin {
     jvmToolchain(targetJavaVersion)
 }
 
-tasks.build {
-    dependsOn("shadowJar")
-}
-
 tasks.processResources {
-    val props = mapOf("version" to version)
+    val props = mapOf(
+        "version" to version
+    )
     inputs.properties(props)
     filteringCharset = "UTF-8"
     filesMatching("plugin.yml") {
         expand(props)
     }
 }
+

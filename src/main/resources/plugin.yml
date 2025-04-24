@@ -1,9 +1,18 @@
 name: FlyFuel
-version: "1.0-SNAPSHOT"
+version: "${version}"
 main: org.htilssu.flyFuel.FlyFuel
 api-version: "1.18"
 load: STARTUP
 authors: [htilssu]
+loadbefore:
+  - "luckperms"
+
+commands:
+  ff:
+    description: Main command for FlyFuel plugin
+    usage: /<command> [help|toggle|status]
+    aliases: [flyfuel]
+    permission: flyfuel.use
 
 permissions:
   flyfuel.use:
